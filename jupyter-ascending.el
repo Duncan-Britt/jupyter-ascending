@@ -150,7 +150,7 @@
   (ja--run-jupyter-ascending-command
    "execute_all"
    (concat "--filename \"" (ja--get-filename) "\"")))
-
+;;;###autoload
 (defun ja-start-notebook ()
   "Start a Jupyter notebook for the current file.
 Assumes the notebook has the same name as the current file but with .ipynb extension."
@@ -242,6 +242,7 @@ Otherwise, use the default RET behavior."
         (set-marker (mark-marker) (point) (current-buffer)))
     (newline-and-indent)))
 
+;;;###autoload
 (defun ja-create-notebook-pair (base-name)
   "Create a synced pair of Jupyter notebook files using jupyter_ascending.
 With BASE-NAME as the file prefix (without extension), creates .sync.py and .sync.ipynb files."
@@ -274,7 +275,7 @@ With BASE-NAME as the file prefix (without extension), creates .sync.py and .syn
              (when (y-or-n-p "Open the Python file? ")
                (find-file (format "%s.sync.py" base-name))
                (jupyter-ascending-mode 1)))))))))
-
+;;;###autoload
 (defun ja-convert-notebook ()
   "Convert an existing Jupyter notebook to a synced pair with jupytext.
 Renames both files with .sync infix."
