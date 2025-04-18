@@ -9,7 +9,7 @@ The Jupyter Ascending package facilitates editing and executing code in a Jupyte
 - executing code in the Jupyter notebook.
 This allows users to work with Jupyter Python notebooks in the comfort of Emacs and make use of all the features they would normally have when editing Python code, such as code completion, linting, etc.
 
-[[*Demo][See demos.]]
+*See demos below.*
 
 * Features
 - Synchronization: Editing and saving the Python buffer automatically updates the Jupyter notebook
