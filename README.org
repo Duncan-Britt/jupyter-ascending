@@ -1,14 +1,15 @@
-#+title: Jupyter Ascending (for Emacs)
+#+title: Jupyter Ascending for Emacs
 #+author: Duncan Britt
 #+date: <2025-04-18>
 #+options: toc:nil
 
-* Summary
 The Jupyter Ascending package facilitates editing and executing code in a Jupyter Python notebook from an ordinary Python buffer in Emacs. It does this by providing Emacs commands which utilize the Jupytext and Jupyter Ascending command line tools for
 - rendering .ipynb notebooks as standard Python source files,
 - synchronizing the state of the 2 files, and
 - executing code in the Jupyter notebook.
 This allows users to work with Jupyter Python notebooks in the comfort of Emacs and make use of all the features they would normally have when editing Python code, such as code completion, linting, etc.
+
+[[*Demo][See demos.]]
 
 * Features
 - Synchronization: Editing and saving the Python buffer automatically updates the Jupyter notebook
@@ -22,3 +23,16 @@ This allows users to work with Jupyter Python notebooks in the comfort of Emacs 
 
 * Limitations
 This package only works with Python notebooks because the Jupyter Ascending command line tool only supports Python notebooks.  See here: https://github.com/imbue-ai/jupyter_ascending/issues/25
+
+* Demo
+#+caption: Starting up a session
+#+attr_org: :width 600
+[[./demo/ja-setup.gif]]
+
+#+caption: Python usage
+#+attr_org: :width 600
+[[./demo/ja-basic.gif]]
+
+#+caption: Markdown usage
+#+attr_org: :width 600
+[[./demo/ja-md.gif]]
