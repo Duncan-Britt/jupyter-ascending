@@ -111,6 +111,13 @@
 ;; and then add the .sync suffix to both files
 ;;
 ;;; Code:
+;; For markdown-mode-map and markdown-mode
+(declare-function markdown-mode "markdown-mode" ())
+(defvar markdown-mode-map)
+
+;; For dired-get-filename
+(declare-function dired-get-filename "dired" (&optional localp no-error-if-not-filep))
+
 (defgroup jupyter-ascending nil
   "Edit Jupyter notebooks in Emacs using jupyter_ascending."
   :group 'tools
@@ -179,6 +186,10 @@ extension."
    "restart"
    (concat "--filename \"" (ja--get-filename) "\"")))
 
+(defvar jupyter-ascending-mode nil
+  "Silencing warning about reference to free variable
+'jupyter-ascending-mode'")
+
 (defun ja-after-save-hook ()
   "Run after saving to sync with Jupyter notebook."
   (when jupyter-ascending-mode
@@ -187,20 +198,18 @@ extension."
 (defun ja-next-cell ()
   "Move point to the next cell marked by '# %%' at the beginning of a line."
   (interactive)
-  (let ((found nil))
-    (end-of-line)
-    (if (re-search-forward "^# %%" nil t)
-        (beginning-of-line)
-      (goto-char (point-max))
-      (unless (bolp) (insert "\n"))
-      (insert "\n# %%\n")
-      (message "Created new code cell"))))
+  (end-of-line)
+  (if (re-search-forward "^# %%" nil t)
+      (beginning-of-line)
+    (goto-char (point-max))
+    (unless (bolp) (insert "\n"))
+    (insert "\n# %%\n")
+    (message "Created new code cell")))
 
 (defun ja-previous-cell ()
   "Move point to the previous cell marked by '# %%' at the beginning of a line."
   (interactive)
-  (let ((orig-point (point))
-        (found nil))
+  (let ((orig-point (point)))
     (beginning-of-line)
     (if (re-search-backward "^# %%" nil t)
         (beginning-of-line)
