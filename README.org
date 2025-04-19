@@ -25,14 +25,14 @@ This allows users to work with Jupyter Python notebooks in the comfort of Emacs 
 This package only works with Python notebooks because the Jupyter Ascending command line tool only supports Python notebooks.  See here: https://github.com/imbue-ai/jupyter_ascending/issues/25
 
 * Demo
-#+caption: Starting up a session
+Starting up a session
 #+attr_org: :width 600
 [[./demo/ja-setup.gif]]
 
-#+caption: Python usage
+Python usage
 #+attr_org: :width 600
 [[./demo/ja-basic.gif]]
 
-#+caption: Markdown usage
+Markdown usage
 #+attr_org: :width 600
 [[./demo/ja-md.gif]]
