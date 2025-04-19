@@ -60,12 +60,12 @@ Installing with Elpaca:
                                       (string-match-p "\\.sync\\.py\\'" buffer-file-name))
                              (jupyter-ascending-mode 1))))
     :bind (:map jupyter-ascending-mode-map
-                ("C-c C-k" . ja-execute-line)
-                ("C-c C-a" . ja-execute-all)
-                ("C-c C-n" . ja-next-cell)
-                ("C-c C-p" . ja-previous-cell)
-                ("C-c t" . ja-cycle-cell-type)
-                ("C-c '" . ja-edit-markdown-cell)))
+                ("C-c C-k" . jupyter-ascending-execute-line)
+                ("C-c C-a" . jupyter-ascending-execute-all)
+                ("C-c C-n" . jupyter-ascending-next-cell)
+                ("C-c C-p" . jupyter-ascending-previous-cell)
+                ("C-c t" . jupyter-ascending-cycle-cell-type)
+                ("C-c '" . jupyter-ascending-edit-markdown-cell)))
 #+end_src
 * Limitations
 This package only works with Python notebooks because the [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tool only supports Python notebooks.  See here: https://github.com/imbue-ai/jupyter_ascending/issues/25

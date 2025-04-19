@@ -6,8 +6,8 @@
 ;; Contact: https://github.com/Duncan-Britt/jupyter-ascending/issues
 ;; URL: https://github.com/Duncan-Britt/jupyter-ascending
 ;; Version: 0.1.0
-;; Keywords: jupyter, notebook, python
-;; Package-Requires: ((emacs "29.4") (python "0.28"))
+;; Keywords: tools, jupyter, notebook, python
+;; Package-Requires: ((emacs "29.4"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -28,10 +28,10 @@
 ;; ┌─────────┐
 ;; │ Summary │
 ;; └─────────┘
-;; The Jupyter Ascending package facilitates editing and
-;; executing code in a Jupyter Python notebook from an ordinary Python
-;; buffer in Emacs.  It does this by providing Emacs commands which
-;; utilize the Jupytext and Jupyter Ascending command line tools for
+;; The Jupyter Ascending package facilitates editing and executing
+;; code in a Jupyter Python notebook from an ordinary Python buffer.
+;; It does this by providing Emacs commands which utilize the Jupytext
+;; and Jupyter Ascending command line tools for
 ;; - rendering .ipynb notebooks as standard Python source files,
 ;; - synchronizing the state of the 2 files, and
 ;; - executing code in the Jupyter notebook.
@@ -82,30 +82,30 @@
 ;;                                     (string-match-p "\\.sync\\.py\\'" buffer-file-name))
 ;;                            (jupyter-ascending-mode 1))))
 ;;   :bind (:map jupyter-ascending-mode-map
-;;               ("C-c C-k" . ja-execute-line)
-;;               ("C-c C-a" . ja-execute-all)
-;;               ("C-c C-n" . ja-next-cell)
-;;               ("C-c C-p" . ja-previous-cell)
-;;               ("C-c t" . ja-cycle-cell-type)
-;;               ("C-c '" . ja-edit-markdown-cell)))
+;;               ("C-c C-k" . jupyter-ascending-execute-line)
+;;               ("C-c C-a" . jupyter-ascending-execute-all)
+;;               ("C-c C-n" . jupyter-ascending-next-cell)
+;;               ("C-c C-p" . jupyter-ascending-previous-cell)
+;;               ("C-c t" . jupyter-ascending-cycle-cell-type)
+;;               ("C-c '" . jupyter-ascending-edit-markdown-cell)))
 ;;
 ;; ┌───────┐
 ;; │ Usage │
 ;; └───────┘
 ;; Create a notebook pair with:
-;;     M-x `ja-create-notebook-pair' RET example RET
+;;     M-x `jupyter-ascending-create-notebook-pair' RET example RET
 ;; Or, equivalently
 ;;     python3 -m jupyter_ascending.scripts.make_pair --base example
 ;; This creates synced files: example.sync.py and example.sync.ipynb
 ;;
 ;; Start jupyter and open the notebook:
 ;;     With example.sync.py open,
-;;     M-x `ja-start-notebook'
+;;     M-x `jupyter-ascending-start-notebook'
 ;; Or, equivalently,
 ;;     python3 -m jupyter notebook example.sync.ipynb
 ;;
 ;; If you have an existing jupyter notebook, create a python file from it,
-;;     M-x `ja-convert-notebook' RET example.ipynb RET
+;;     M-x `jupyter-ascending-convert-notebook' RET example.ipynb RET
 ;; Or, equivalently,
 ;;     jupytext --to py:percent <file_name>
 ;; and then add the .sync suffix to both files
@@ -121,9 +121,9 @@
 (defgroup jupyter-ascending nil
   "Edit Jupyter notebooks in Emacs using jupyter_ascending."
   :group 'tools
-  :prefix "ja-")
+  :prefix "jupyter-ascending-")
 
-(defcustom ja-python-command "python3"
+(defcustom jupyter-ascending-python-command "python3"
   "Python command used by jupyter ascending."
   :type 'string
   :group 'jupyter-ascending)
@@ -134,68 +134,69 @@
 ;; ┌──────────┐
 ;; │ Commands │
 ;; └──────────┘
-(defun ja-sync-file ()
+(defun jupyter-ascending-sync-file ()
   "Sync the current buffer with its associated Jupyter notebook."
   (interactive)
   (when (called-interactively-p 'any)
     (save-buffer))
-  (ja--run-jupyter-ascending-command
+  (jupyter-ascending--run-jupyter-ascending-command
    "sync"
-   (concat "--filename \"" (ja--get-filename) "\"")))
+   (concat "--filename \"" (jupyter-ascending--get-filename) "\"")))
 
-(defun ja-execute-line ()
+(defun jupyter-ascending-execute-line ()
   "Execute the cell at current line in the associated Jupyter notebook."
   (interactive)
   (save-buffer)
-  (ja--run-jupyter-ascending-command
+  (jupyter-ascending--run-jupyter-ascending-command
    "execute"
-   (concat "--filename \"" (ja--get-filename) "\"")
-   (concat "--linenumber \"" (number-to-string (ja--get-current-line-number)) "\"")))
+   (concat "--filename \"" (jupyter-ascending--get-filename) "\"")
+   (concat "--linenumber \"" (number-to-string (jupyter-ascending--get-current-line-number)) "\"")))
 
-(defun ja-execute-all ()
+(defun jupyter-ascending-execute-all ()
   "Execute all cells in the associated Jupyter notebook."
   (interactive)
   (save-buffer)
-  (ja--run-jupyter-ascending-command
+  (jupyter-ascending--run-jupyter-ascending-command
    "execute_all"
-   (concat "--filename \"" (ja--get-filename) "\"")))
+   (concat "--filename \"" (jupyter-ascending--get-filename) "\"")))
+
 ;;;###autoload
-(defun ja-start-notebook ()
+(defun jupyter-ascending-start-notebook ()
   "Start a Jupyter notebook for the current file.  Assumes the
 notebook has the same name as the current file but with .ipynb
 extension."
   (interactive)
-  (let* ((current-file (ja--get-filename))
+  (let* ((current-file (jupyter-ascending--get-filename))
          (notebook-file (concat (file-name-sans-extension current-file) ".ipynb"))
          (default-directory (file-name-directory (expand-file-name current-file))))
 
     (unless (file-exists-p notebook-file)
-      (error "Notebook file %s does not exist.  Run ja-init-file first" notebook-file))
+      (error "Notebook file %s does not exist.  Run jupyter-ascending-init-file first" notebook-file))
 
     (async-shell-command
      (format "%s -m jupyter notebook %s"
-             ja-python-command
+             jupyter-ascending-python-command
              (file-name-nondirectory notebook-file))
      "*jupyter-notebook*")))
 
-(defun ja-restart-notebook ()
+(defun jupyter-ascending-restart-notebook ()
   "Restart associated Jupyter notebook."
   (interactive)
   (save-buffer)
-  (ja--run-jupyter-ascending-command
+  (jupyter-ascending--run-jupyter-ascending-command
    "restart"
-   (concat "--filename \"" (ja--get-filename) "\"")))
+   (concat "--filename \"" (jupyter-ascending--get-filename) "\"")))
 
 (defvar jupyter-ascending-mode nil
   "Silencing warning about reference to free variable
 `jupyter-ascending-mode'")
 
-(defun ja-after-save-hook ()
+(defun jupyter-ascending-after-save-hook ()
   "Run after saving to sync with Jupyter notebook."
   (when jupyter-ascending-mode
-    (ja-sync-file)))
+    (jupyter-ascending-sync-file)))
 
-(defun ja-next-cell ()
+(defun jupyter-ascending-next-cell ()
   "Move point to the next cell marked by '# %%' at the beginning of a line."
   (interactive)
   (end-of-line)
@@ -206,7 +207,7 @@ extension."
     (insert "\n# %%\n")
     (message "Created new code cell")))
 
-(defun ja-previous-cell ()
+(defun jupyter-ascending-previous-cell ()
   "Move point to the previous cell marked by '# %%' at the beginning of a line."
   (interactive)
   (let ((orig-point (point)))
@@ -216,7 +217,7 @@ extension."
       (goto-char orig-point)
       (message "No previous cell found"))))
 
-(defun ja-cycle-cell-type ()
+(defun jupyter-ascending-cycle-cell-type ()
   "Toggle the current cell between code and markdown type."
   (interactive)
   (save-excursion
@@ -241,12 +242,12 @@ extension."
             (insert "# %% [markdown]")
             (message "Converted to markdown cell")))))))
 
-(defun ja-markdown-RET ()
+(defun jupyter-ascending-markdown-RET ()
   "Handle RET key in markdown cells.
 If in a markdown cell, insert a '#' comment marker with proper spacing.
 Otherwise, use the default RET behavior."
   (interactive)
-  (if (ja--in-markdown-cell-p)
+  (if (jupyter-ascending--in-markdown-cell-p)
       (progn
         (newline)
         (insert "# ")
@@ -254,7 +255,7 @@ Otherwise, use the default RET behavior."
     (newline-and-indent)))
 
 ;;;###autoload
-(defun ja-create-notebook-pair (base-name)
+(defun jupyter-ascending-create-notebook-pair (base-name)
   "Create a synced pair of Jupyter notebook files using
 jupyter_ascending.  With BASE-NAME as the file prefix (without
 extension), creates .sync.py and .sync.ipynb files."
@@ -266,14 +267,14 @@ extension), creates .sync.py and .sync.ipynb files."
                                (file-name-directory (buffer-file-name))
                              default-directory))
          (command (format "%s -m jupyter_ascending.scripts.make_pair --base %s"
-                          ja-python-command
+                          jupyter-ascending-python-command
                           (shell-quote-argument base-name)))
          (buffer-name "*jupyter-ascending-create*"))
 
     (message "Creating notebook pair with base name: %s" base-name)
     (with-current-buffer (get-buffer-create buffer-name)
       (erase-buffer)
-      (let ((proc (start-process "ja-create-notebook" buffer-name
+      (let ((proc (start-process "jupyter-ascending-create-notebook" buffer-name
                                  shell-file-name shell-command-switch command)))
         (set-process-sentinel
          proc
@@ -287,8 +288,9 @@ extension), creates .sync.py and .sync.ipynb files."
              (when (y-or-n-p "Open the Python file? ")
                (find-file (format "%s.sync.py" base-name))
                (jupyter-ascending-mode 1)))))))))
+
 ;;;###autoload
-(defun ja-convert-notebook ()
+(defun jupyter-ascending-convert-notebook ()
   "Convert an existing Jupyter notebook to a synced pair with jupytext.
 Renames both files with .sync infix."
   (interactive)
@@ -342,25 +344,25 @@ Renames both files with .sync infix."
 ;; ┌──────────────────┐
 ;; │ Markdown editing │
 ;; └──────────────────┘
-(defvar-local ja--edit-marker nil
+(defvar-local jupyter-ascending--edit-marker nil
   "Marker for the original location in the source buffer.")
 
-(defvar-local ja--edit-src-buffer nil
+(defvar-local jupyter-ascending--edit-src-buffer nil
   "Buffer that contains the original markdown cell.")
 
-(defvar-local ja--edit-cell-overlay nil
+(defvar-local jupyter-ascending--edit-cell-overlay nil
   "Overlay highlighting the cell being edited.")
 
-(defun ja-save-src-buffer ()
+(defun jupyter-ascending-save-src-buffer ()
   "Save the source buffer associated with this edit buffer."
   (interactive)
-  (when (and ja--edit-src-buffer (buffer-live-p ja--edit-src-buffer))
+  (when (and jupyter-ascending--edit-src-buffer (buffer-live-p jupyter-ascending--edit-src-buffer))
     (let* ((cell-content (buffer-string))
-           (src-buffer ja--edit-src-buffer)
-           (overlay (buffer-local-value 'ja--edit-cell-overlay src-buffer))
+           (src-buffer jupyter-ascending--edit-src-buffer)
+           (overlay (buffer-local-value 'jupyter-ascending--edit-cell-overlay src-buffer))
            (saved-edit-buffer (current-buffer)))
       (with-current-buffer src-buffer
-        (when (buffer-local-value 'ja--edit-cell-overlay src-buffer)
+        (when (buffer-local-value 'jupyter-ascending--edit-cell-overlay src-buffer)
           (let ((start (overlay-start overlay))
                 (end (overlay-end overlay)))
             (undo-boundary)
@@ -380,19 +382,19 @@ Renames both files with .sync infix."
               (delete-overlay overlay)
               (setq overlay (make-overlay start new-end))
               (overlay-put overlay 'face 'secondary-selection)
-              (setq-local ja--edit-cell-overlay overlay)
+              (setq-local jupyter-ascending--edit-cell-overlay overlay)
               ;; Update overlay in edit buffer too
               (with-current-buffer saved-edit-buffer
-                (setq-local ja--edit-cell-overlay overlay)))))
+                (setq-local jupyter-ascending--edit-cell-overlay overlay)))))
 
         (save-buffer)
-        (ja-sync-file)))))
+        (jupyter-ascending-sync-file)))))
 
-(defun ja-edit-markdown-cell ()
+(defun jupyter-ascending-edit-markdown-cell ()
   "Edit the current markdown cell in a dedicated buffer."
   (interactive)
   (barf-if-buffer-read-only)
-  (unless (ja--in-markdown-cell-p)
+  (unless (jupyter-ascending--in-markdown-cell-p)
     (user-error "Not in a markdown cell"))
 
   ;; Find the cell boundaries
@@ -416,17 +418,17 @@ Renames both files with .sync infix."
                 ;; If we found at least one comment line, use it as end
                 ;; Otherwise fall back to next cell or point-max
                 (or last-comment-line next-cell (point-max))))))
-         (cell-content (ja--markdown-cell-content cell-start cell-end))
-         (edit-buffer (generate-new-buffer (concat "*ja-markdown-edit*")))
+         (cell-content (jupyter-ascending--markdown-cell-content cell-start cell-end))
+         (edit-buffer (generate-new-buffer (concat "*jupyter-ascending-markdown-edit*")))
          (src-buffer (current-buffer))
          (overlay (make-overlay cell-start cell-end)))
 
     ;; Set properties for the overlay
     (overlay-put overlay 'face 'secondary-selection)
-      (setq ja--edit-cell-overlay overlay)
+      (setq jupyter-ascending--edit-cell-overlay overlay)
 
     ;; Create marker for the original position
-    (setq ja--edit-marker (set-marker (make-marker) (point)))
+    (setq jupyter-ascending--edit-marker (set-marker (make-marker) (point)))
 
     ;; Set up the edit buffer
     (with-current-buffer edit-buffer
@@ -434,27 +436,27 @@ Renames both files with .sync infix."
       (insert cell-content)
       (goto-char (point-min))
       (set-buffer-modified-p nil)
-      (setq-local ja--edit-src-buffer src-buffer)
-      (setq-local ja--edit-cell-overlay overlay)
+      (setq-local jupyter-ascending--edit-src-buffer src-buffer)
+      (setq-local jupyter-ascending--edit-cell-overlay overlay)
 
       (use-local-map (copy-keymap markdown-mode-map))
-      (local-set-key (kbd "C-c C-c") #'ja-edit-markdown-finish)
-      (local-set-key (kbd "C-c C-k") #'ja-edit-markdown-abort)
-      (local-set-key (kbd "C-x C-s") #'ja-save-src-buffer)
+      (local-set-key (kbd "C-c C-c") #'jupyter-ascending-edit-markdown-finish)
+      (local-set-key (kbd "C-c C-k") #'jupyter-ascending-edit-markdown-abort)
+      (local-set-key (kbd "C-x C-s") #'jupyter-ascending-save-src-buffer)
 
   (setq header-line-format
         (substitute-command-keys
-         "Edit markdown cell. \\[ja-edit-markdown-finish] to finish, \\[ja-edit-markdown-abort] to abort. \\[ja-save-src-buffer] to save source.")))
+         "Edit markdown cell. \\[jupyter-ascending-edit-markdown-finish] to finish, \\[jupyter-ascending-edit-markdown-abort] to abort. \\[jupyter-ascending-save-src-buffer] to save source.")))
 
     (pop-to-buffer edit-buffer)))
 
-(defun ja-edit-markdown-finish ()
+(defun jupyter-ascending-edit-markdown-finish ()
   "Finish editing the markdown cell and update the original buffer."
   (interactive)
   (let ((edit-buffer (current-buffer))
         (cell-content (buffer-string))
-        (src-buffer ja--edit-src-buffer)
-        (overlay ja--edit-cell-overlay)
+        (src-buffer jupyter-ascending--edit-src-buffer)
+        (overlay jupyter-ascending--edit-cell-overlay)
         (edit-window (selected-window)))
 
     (unless (and src-buffer (buffer-live-p src-buffer))
@@ -462,8 +464,8 @@ Renames both files with .sync infix."
 
     ;; Insert the edited content back into the source buffer
     (with-current-buffer src-buffer
-      (when (buffer-local-value 'ja--edit-cell-overlay src-buffer)
-        (let ((overlay (buffer-local-value 'ja--edit-cell-overlay src-buffer))
+      (when (buffer-local-value 'jupyter-ascending--edit-cell-overlay src-buffer)
+        (let ((overlay (buffer-local-value 'jupyter-ascending--edit-cell-overlay src-buffer))
               (start (overlay-start overlay))
               (end (overlay-end overlay)))
           (undo-boundary)
@@ -478,13 +480,13 @@ Renames both files with .sync infix."
                             "\n")))
             (insert commented-lines))
           ;; Move cursor to the original position if possible
-          (when (and ja--edit-marker (marker-buffer ja--edit-marker))
-            (goto-char ja--edit-marker)
-            (set-marker ja--edit-marker nil))
+          (when (and jupyter-ascending--edit-marker (marker-buffer jupyter-ascending--edit-marker))
+            (goto-char jupyter-ascending--edit-marker)
+            (set-marker jupyter-ascending--edit-marker nil))
 
           ;; Clean up overlay
           (delete-overlay overlay)
-          (setq ja--edit-cell-overlay nil))))
+          (setq jupyter-ascending--edit-cell-overlay nil))))
 
     ;; Find window displaying source buffer
     (let ((src-window (get-buffer-window src-buffer)))
@@ -500,12 +502,12 @@ Renames both files with .sync infix."
 
       (delete-window edit-window))))
 
-(defun ja-edit-markdown-abort ()
+(defun jupyter-ascending-edit-markdown-abort ()
   "Abort editing the markdown cell."
   (interactive)
   (let ((edit-buffer (current-buffer))
-        (src-buffer ja--edit-src-buffer)
-        (overlay ja--edit-cell-overlay)
+        (src-buffer jupyter-ascending--edit-src-buffer)
+        (overlay jupyter-ascending--edit-cell-overlay)
         (edit-window (selected-window)))
 
     ;; Go back to source buffer
@@ -514,11 +516,11 @@ Renames both files with .sync infix."
         ;; Clean up overlay
         (when (and overlay (overlay-buffer overlay))
           (delete-overlay overlay)
-          (setq ja--edit-cell-overlay nil))
+          (setq jupyter-ascending--edit-cell-overlay nil))
         ;; Move cursor to the original position if possible
-        (when (and ja--edit-marker (marker-buffer ja--edit-marker))
-          (goto-char ja--edit-marker)
-          (set-marker ja--edit-marker nil)))
+        (when (and jupyter-ascending--edit-marker (marker-buffer jupyter-ascending--edit-marker))
+          (goto-char jupyter-ascending--edit-marker)
+          (set-marker jupyter-ascending--edit-marker nil)))
 
       ;; Find window displaying source buffer
       (let ((src-window (get-buffer-window src-buffer)))
@@ -547,10 +549,10 @@ Renames both files with .sync infix."
   :group 'jupyter-ascending
   (if jupyter-ascending-mode
       (progn
-        (add-hook 'after-save-hook #'ja-after-save-hook nil t)
-        (local-set-key (kbd "RET") 'ja-markdown-RET)
+        (add-hook 'after-save-hook #'jupyter-ascending-after-save-hook nil t)
+        (local-set-key (kbd "RET") 'jupyter-ascending-markdown-RET)
         (message "Jupyter-Ascending mode enabled"))
-    (remove-hook 'after-save-hook #'ja-after-save-hook t)
+    (remove-hook 'after-save-hook #'jupyter-ascending-after-save-hook t)
     (local-unset-key (kbd "RET"))
     (message "Jupyter-Ascending mode disabled")))
 
@@ -558,7 +560,7 @@ Renames both files with .sync infix."
 ;; │ Internal Functions │
 ;; └────────────────────┘
 
-(defun ja--markdown-cell-content (cell-start cell-end)
+(defun jupyter-ascending--markdown-cell-content (cell-start cell-end)
   "Return the markdown content of the cell demarcated by CELL-START
 and CELL-END."
   (let ((cell-content ""))
@@ -588,15 +590,15 @@ and CELL-END."
       (setq cell-content (substring cell-content 0 -1)))
     cell-content))
 
-(defun ja--get-current-line-number ()
+(defun jupyter-ascending--get-current-line-number ()
   "Get the current line number."
   (line-number-at-pos))
 
-(defun ja--get-filename ()
+(defun jupyter-ascending--get-filename ()
   "Get the current buffer's filename."
   (buffer-file-name))
 
-(defun ja--run-jupyter-ascending-command (command &rest args)
+(defun jupyter-ascending--run-jupyter-ascending-command (command &rest args)
   "Run a jupyter_ascending COMMAND with ARGS asynchronously."
   (let* ((proc-name "jupyter-ascending")
          (module-path (concat "jupyter_ascending.requests." command))
@@ -614,11 +616,11 @@ and CELL-END."
                                         (list (string-trim (car arg)) (cadr arg))
                                       (list arg)))
                                   processed-args))))
-    (message "Running: %s %s" ja-python-command (mapconcat #'identity flat-args " "))
+    (message "Running: %s %s" jupyter-ascending-python-command (mapconcat #'identity flat-args " "))
     (let ((proc (apply #'start-process
                        proc-name
                        "*jupyter-ascending*"  ; buffer to help with debugging
-                       ja-python-command
+                       jupyter-ascending-python-command
                        flat-args)))
       (set-process-sentinel
        proc
@@ -627,7 +629,7 @@ and CELL-END."
              (message "Jupyter ascending `%s' completed successfully" command)
            (message "Jupyter command event: %s" event)))))))
 
-(defun ja--in-markdown-cell-p ()
+(defun jupyter-ascending--in-markdown-cell-p ()
   "Return non-nil if point is within a markdown cell.
 A markdown cell is defined by a line starting with '# %% [markdown]'."
   (save-excursion
