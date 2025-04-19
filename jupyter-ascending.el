@@ -258,7 +258,8 @@ Otherwise, use the default RET behavior."
 (defun jupyter-ascending-create-notebook-pair (base-name)
   "Create a synced pair of Jupyter notebook files using jupyter_ascending.
 With BASE-NAME as the file prefix (without
-extension), creates .sync.py and .sync.ipynb files."   (interactive
+extension), creates .sync.py and .sync.ipynb files."
+  (interactive
    (list
     (read-string "Base name for notebook: ")))
 
