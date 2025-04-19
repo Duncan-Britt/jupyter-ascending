@@ -30,7 +30,7 @@
 ;; └─────────┘
 ;; The Jupyter Ascending package facilitates editing and
 ;; executing code in a Jupyter Python notebook from an ordinary Python
-;; buffer in Emacs. It does this by providing Emacs commands which
+;; buffer in Emacs.  It does this by providing Emacs commands which
 ;; utilize the Jupytext and Jupyter Ascending command line tools for
 ;; - rendering .ipynb notebooks as standard Python source files,
 ;; - synchronizing the state of the 2 files, and
@@ -160,7 +160,7 @@ Assumes the notebook has the same name as the current file but with .ipynb exten
          (default-directory (file-name-directory (expand-file-name current-file))))
 
     (unless (file-exists-p notebook-file)
-      (error "Notebook file %s does not exist. Run ja-init-file first" notebook-file))
+      (error "Notebook file %s does not exist.  Run ja-init-file first" notebook-file))
 
     (async-shell-command
      (format "%s -m jupyter notebook %s"
@@ -548,6 +548,8 @@ Renames both files with .sync infix."
 ;; └────────────────────┘
 
 (defun ja--markdown-cell-content (cell-start cell-end)
+  "Return the markdown content of the cell demarcated by CELL-START
+and CELL-END."
   (let ((cell-content ""))
     (save-excursion
       (goto-char cell-start)
