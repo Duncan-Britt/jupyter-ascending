@@ -188,7 +188,7 @@ extension."
 
 (defvar jupyter-ascending-mode nil
   "Silencing warning about reference to free variable
-'jupyter-ascending-mode'")
+`jupyter-ascending-mode'")
 
 (defun ja-after-save-hook ()
   "Run after saving to sync with Jupyter notebook."
