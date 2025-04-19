@@ -9,18 +9,6 @@ The Jupyter Ascending package facilitates editing and executing code in a Jupyte
 - executing code in the Jupyter notebook.
 This allows users to work with Jupyter Python notebooks in the comfort of Emacs and make use of all the features they would normally have when editing Python code, such as code completion, linting, etc.
 
-*See demos below.*
-
-* Features
-- Synchronization: Editing and saving the Python buffer automatically updates the Jupyter notebook
-- Cell execution commands: Run individual cells or the entire notebook
-- Navigation tools: Jump between cells with simple commands
-- Cell management: Create new cells and toggle between code and markdown types
-- Enhanced markdown editing:
-  - Edit markdown cells in dedicated markdown buffers (similar to Org mode's special edit mode)
-  - Automatic comment insertion when pressing return in markdown cells
-- Setup utilities: Commands for starting Jupyter notebooks and creating synchronized file pairs
-
 * Demo
 Starting up a session
 #+attr_org: :width 600
@@ -34,6 +22,15 @@ Markdown usage
 #+attr_org: :width 600
 [[./demo/ja-md.gif]]
 
+* Features
+- Synchronization: Editing and saving the Python buffer automatically updates the Jupyter notebook
+- Cell execution commands: Run individual cells or the entire notebook
+- Navigation tools: Jump between cells with simple commands
+- Cell management: Create new cells and toggle between code and markdown types
+- Enhanced markdown editing:
+  - Edit markdown cells in dedicated markdown buffers (similar to Org mode's special edit mode)
+  - Automatic comment insertion when pressing return in markdown cells
+- Setup utilities: Commands for starting Jupyter notebooks and creating synchronized file pairs
 * Installation
 ** Prerequisites
 The following dependencies must be installed first.
