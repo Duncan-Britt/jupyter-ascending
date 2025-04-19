@@ -117,7 +117,9 @@
   :prefix "ja-")
 
 (defcustom ja-python-command "python3"
-  "Python command used by jupyter ascending.")
+  "Python command used by jupyter ascending."
+  :type 'string
+  :group 'jupyter-ascending)
 
 (defvar jupyter-ascending-mode-map (make-sparse-keymap)
   "Keymap for `jupyter-ascending-mode'.")
@@ -152,8 +154,9 @@
    (concat "--filename \"" (ja--get-filename) "\"")))
 ;;;###autoload
 (defun ja-start-notebook ()
-  "Start a Jupyter notebook for the current file.
-Assumes the notebook has the same name as the current file but with .ipynb extension."
+  "Start a Jupyter notebook for the current file.  Assumes the
+notebook has the same name as the current file but with .ipynb
+extension."
   (interactive)
   (let* ((current-file (ja--get-filename))
          (notebook-file (concat (file-name-sans-extension current-file) ".ipynb"))
@@ -184,8 +187,7 @@ Assumes the notebook has the same name as the current file but with .ipynb exten
 (defun ja-next-cell ()
   "Move point to the next cell marked by '# %%' at the beginning of a line."
   (interactive)
-  (let ((orig-point (point))
-        (found nil))
+  (let ((found nil))
     (end-of-line)
     (if (re-search-forward "^# %%" nil t)
         (beginning-of-line)
@@ -244,8 +246,9 @@ Otherwise, use the default RET behavior."
 
 ;;;###autoload
 (defun ja-create-notebook-pair (base-name)
-  "Create a synced pair of Jupyter notebook files using jupyter_ascending.
-With BASE-NAME as the file prefix (without extension), creates .sync.py and .sync.ipynb files."
+  "Create a synced pair of Jupyter notebook files using
+jupyter_ascending.  With BASE-NAME as the file prefix (without
+extension), creates .sync.py and .sync.ipynb files."
   (interactive
    (list
     (read-string "Base name for notebook: ")))
@@ -265,7 +268,7 @@ With BASE-NAME as the file prefix (without extension), creates .sync.py and .syn
                                  shell-file-name shell-command-switch command)))
         (set-process-sentinel
          proc
-         (lambda (process event)
+         (lambda (_process event)
            (if (string-match "finished" event)
                (message "Created Jupyter notebook pair: %s.sync.{py,ipynb}" base-name)
              (message "Error creating notebook pair: %s"
@@ -310,7 +313,7 @@ Renames both files with .sync infix."
                                  "jupytext" "--to" "py:percent" ipynb-file)))
         (set-process-sentinel
          proc
-         (lambda (process event)
+         (lambda (_process event)
            (if (string-match "finished" event)
                (progn
                  (message "Converted %s to %s" ipynb-file py-file)
@@ -407,7 +410,6 @@ Renames both files with .sync infix."
          (cell-content (ja--markdown-cell-content cell-start cell-end))
          (edit-buffer (generate-new-buffer (concat "*ja-markdown-edit*")))
          (src-buffer (current-buffer))
-         (src-window (selected-window))
          (overlay (make-overlay cell-start cell-end)))
 
     ;; Set properties for the overlay
@@ -611,7 +613,7 @@ and CELL-END."
                        flat-args)))
       (set-process-sentinel
        proc
-       (lambda (process event)
+       (lambda (_process event)
          (if (string-match "finished" event)
              (message "Jupyter ascending `%s' completed successfully" command)
            (message "Jupyter command event: %s" event)))))))
