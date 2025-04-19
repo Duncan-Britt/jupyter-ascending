@@ -3,7 +3,7 @@
 #+date: <2025-04-18>
 #+options: toc:nil
 
-The Jupyter Ascending package facilitates editing and executing code in a Jupyter Python notebook from an ordinary Python buffer in Emacs. It does this by providing Emacs commands which utilize the Jupytext and Jupyter Ascending command line tools for
+The Jupyter Ascending package facilitates editing and executing code in a Jupyter Python notebook from an ordinary Python buffer in Emacs. It does this by providing Emacs commands which utilize the [[https://jupytext.readthedocs.io/en/latest/][Jupytext]] and [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tools for
 - rendering .ipynb notebooks as standard Python source files,
 - synchronizing the state of the 2 files, and
 - executing code in the Jupyter notebook.
@@ -21,9 +21,6 @@ This allows users to work with Jupyter Python notebooks in the comfort of Emacs 
   - Automatic comment insertion when pressing return in markdown cells
 - Setup utilities: Commands for starting Jupyter notebooks and creating synchronized file pairs
 
-* Limitations
-This package only works with Python notebooks because the Jupyter Ascending command line tool only supports Python notebooks.  See here: https://github.com/imbue-ai/jupyter_ascending/issues/25
-
 * Demo
 Starting up a session
 #+attr_org: :width 600
@@ -36,3 +33,42 @@ Python usage
 Markdown usage
 #+attr_org: :width 600
 [[./demo/ja-md.gif]]
+
+* Installation
+** Prerequisites
+The following dependencies must be installed first.
+
+If you haven't already installed [[https://jupyter.org/install][Jupyter]]:
+#+begin_src sh
+  pip install notebook
+#+end_src
+
+Then install the [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tool.
+#+begin_src sh  
+  pip install jupyter_ascending &&
+  python3 -m jupyter nbextension    install jupyter_ascending --sys-prefix --py && \
+  python3 -m jupyter nbextension     enable jupyter_ascending --sys-prefix --py && \
+  python3 -m jupyter serverextension enable jupyter_ascending --sys-prefix --py
+#+end_src
+
+Installing [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] (the command line tool) should install [[https://jupytext.readthedocs.io/en/latest/][jupytext]], but if not, run ~pip install jupytext~.
+
+** ~use-package~
+#+begin_src emacs-lisp
+  (use-package jupyter-ascending
+    :ensure t
+    :hook (python-mode . (lambda ()
+                           (when (and buffer-file-name
+                                      (string-match-p "\\.sync\\.py\\'" buffer-file-name))
+                             (jupyter-ascending-mode 1))))
+    :bind (:map jupyter-ascending-mode-map
+                ("C-c C-k" . ja-execute-line)
+                ("C-c C-a" . ja-execute-all)
+                ("C-c C-n" . ja-next-cell)
+                ("C-c C-p" . ja-previous-cell)
+                ("C-c t" . ja-cycle-cell-type)
+                ("C-c '" . ja-edit-markdown-cell)))
+#+end_src
+* Limitations
+This package only works with Python notebooks because the [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tool only supports Python notebooks.  See here: https://github.com/imbue-ai/jupyter_ascending/issues/25
+
