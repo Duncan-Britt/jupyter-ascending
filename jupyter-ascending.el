@@ -162,9 +162,9 @@
 
 ;;;###autoload
 (defun jupyter-ascending-start-notebook ()
-  "Start a Jupyter notebook for the current file.  Assumes the
-notebook has the same name as the current file but with .ipynb
-extension."
+  "Start a Jupyter notebook for the current file.
+Assumes the
+notebook has the same name as the current file but with .ipynb extension."
   (interactive)
   (let* ((current-file (jupyter-ascending--get-filename))
          (notebook-file (concat (file-name-sans-extension current-file) ".ipynb"))
@@ -188,7 +188,7 @@ extension."
    (concat "--filename \"" (jupyter-ascending--get-filename) "\"")))
 
 (defvar jupyter-ascending-mode nil
-  "Silencing warning about reference to free variable
+  "Silences warning about reference to free variable.
 `jupyter-ascending-mode'")
 
 (defun jupyter-ascending-after-save-hook ()
@@ -256,10 +256,9 @@ Otherwise, use the default RET behavior."
 
 ;;;###autoload
 (defun jupyter-ascending-create-notebook-pair (base-name)
-  "Create a synced pair of Jupyter notebook files using
-jupyter_ascending.  With BASE-NAME as the file prefix (without
-extension), creates .sync.py and .sync.ipynb files."
-  (interactive
+  "Create a synced pair of Jupyter notebook files using jupyter_ascending.
+With BASE-NAME as the file prefix (without
+extension), creates .sync.py and .sync.ipynb files."   (interactive
    (list
     (read-string "Base name for notebook: ")))
 
@@ -561,8 +560,7 @@ Renames both files with .sync infix."
 ;; └────────────────────┘
 
 (defun jupyter-ascending--markdown-cell-content (cell-start cell-end)
-  "Return the markdown content of the cell demarcated by CELL-START
-and CELL-END."
+  "Return the markdown content of the cell."
   (let ((cell-content ""))
     (save-excursion
       (goto-char cell-start)
