@@ -560,7 +560,7 @@ Renames both files with .sync infix."
 ;; └────────────────────┘
 
 (defun jupyter-ascending--markdown-cell-content (cell-start cell-end)
-  "Return the markdown content of the cell."
+  "Return the markdown content between CELL-START and CELL-END."
   (let ((cell-content ""))
     (save-excursion
       (goto-char cell-start)
