@@ -1,4 +1,4 @@
-;;; jupyter-ascending.el --- Edit Jupyter Notebooks from Emacs -*- lexical-binding: t; -*-
+;;; jupyter-ascending.el --- Edit Jupyter Notebooks in plain text -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2025 Duncan Britt
 ;;
@@ -30,15 +30,14 @@
 ;; └─────────┘
 ;; The Jupyter Ascending package facilitates editing and executing
 ;; code in a Jupyter Python notebook from an ordinary Python buffer.
-;; It does this by providing Emacs commands which utilize the Jupytext
-;; and Jupyter Ascending command line tools for
+;; It does this by providing commands which utilize the Jupytext and
+;; Jupyter Ascending command line tools for
 ;; - rendering .ipynb notebooks as standard Python source files,
 ;; - synchronizing the state of the 2 files, and
 ;; - executing code in the Jupyter notebook.
-;; This allows users to work with Jupyter Python notebooks in the
-;; comfort of Emacs and make use of all the features they would
-;; normally have when editing Python code, such as code completion,
-;; linting, etc.
+;; This allows users to work with Jupyter Python notebooks and make
+;; use of all the features they would normally have when editing
+;; Python code, such as code completion, linting, etc.
 
 ;; ┌──────────┐
 ;; │ Features │
