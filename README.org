@@ -69,4 +69,6 @@ Installing with Elpaca:
 #+end_src
 * Limitations
 This package only works with Python notebooks because the [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tool only supports Python notebooks.  See here: https://github.com/imbue-ai/jupyter_ascending/issues/25
-
+* Related Packages
+- [[https://github.com/emacs-jupyter/jupyter/tree/3615c2de16988c4dd9d1978bfa10ee3092e85b33?tab=readme-ov-file#related-packages][emacs-jupyter]]
+- [[https://github.com/millejoh/emacs-ipython-notebook][ein]]
