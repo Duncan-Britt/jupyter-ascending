@@ -7,20 +7,20 @@ The Jupyter Ascending package facilitates editing and executing code in a Jupyte
 - rendering .ipynb notebooks as standard Python source files,
 - synchronizing the state of the 2 files, and
 - executing code in the Jupyter notebook.
-This allows users to work with Jupyter Python notebooks in the comfort of Emacs and make use of all the features they would normally have when editing Python code, such as code completion, linting, etc.
+This allows users to work with Jupyter Python notebooks in the comfort of Emacs and make use of all the features they would normally have when editing Python code, such as code completion, linting, etc, as well as running the code with their systems Python interpreter.
 
 * Demo
-Starting up a session
-#+attr_org: :width 600
-[[./demo/ja-setup.gif]]
-
 Python usage
 #+attr_org: :width 600
-[[./demo/ja-basic.gif]]
+[[./demo/jup-basic.gif]]
 
 Markdown usage
 #+attr_org: :width 600
-[[./demo/ja-md.gif]]
+[[./demo/jup-markdown.gif]]
+
+Starting up a session
+#+attr_org: :width 600
+[[./demo/jup-setup.gif]]
 
 * Features
 - Synchronization: Editing and saving the Python buffer automatically updates the Jupyter notebook
