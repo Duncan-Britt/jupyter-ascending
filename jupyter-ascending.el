@@ -173,7 +173,7 @@ notebook has the same name as the current file but with .ipynb extension."
       (error "Notebook file %s does not exist.  Run jupyter-ascending-init-file first" notebook-file))
 
     (async-shell-command
-     (format "%s -m jupyter notebook %s"
+     (format "%s -m jupyter notebook \"%s\""
              jupyter-ascending-python-command
              (file-name-nondirectory notebook-file))
      "*jupyter-notebook*")))
