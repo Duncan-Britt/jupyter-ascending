@@ -591,19 +591,19 @@ Renames both files with .sync infix."
 (defun jupyter-ascending--run-jupyter-ascending-command (command &rest args)
   "Run a jupyter_ascending COMMAND with ARGS asynchronously."
   (let* ((proc-name "jupyter-ascending")
-         (module-path (concat "jupyter_ascending.requests." command))
+         (module-path (concat "jupyter_ascending.requests." command)))
     (message "Running: %s %s" jupyter-ascending-python-command (mapconcat #'identity args " "))
     (let ((proc (apply #'start-process
                        proc-name
                        "*jupyter-ascending*"  ; buffer to help with debugging
                        jupyter-ascending-python-command
-                       args)))
+                       (append (list "-m" module-path) args))))
       (set-process-sentinel
        proc
        (lambda (_process event)
          (if (string-match "finished" event)
              (message "Jupyter ascending `%s' completed successfully" command)
-           (message "Jupyter command event: %s" event))))))))
+           (message "Jupyter command event: %s" event)))))))
 
 (defun jupyter-ascending--in-markdown-cell-p ()
   "Return non-nil if point is within a markdown cell.
