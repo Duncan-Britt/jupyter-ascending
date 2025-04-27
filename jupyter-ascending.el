@@ -140,7 +140,7 @@
     (save-buffer))
   (jupyter-ascending--run-jupyter-ascending-command
    "sync"
-   (concat "--filename \"" (jupyter-ascending--get-filename) "\"")))
+   "--filename" (buffer-file-name)))
 
 (defun jupyter-ascending-execute-line ()
   "Execute the cell at current line in the associated Jupyter notebook."
@@ -148,8 +148,8 @@
   (save-buffer)
   (jupyter-ascending--run-jupyter-ascending-command
    "execute"
-   (concat "--filename \"" (jupyter-ascending--get-filename) "\"")
-   (concat "--linenumber \"" (number-to-string (jupyter-ascending--get-current-line-number)) "\"")))
+   "--filename" (buffer-file-name)
+   "--linenumber" (number-to-string (line-number-at-pos))))
 
 (defun jupyter-ascending-execute-all ()
   "Execute all cells in the associated Jupyter notebook."
@@ -157,15 +157,15 @@
   (save-buffer)
   (jupyter-ascending--run-jupyter-ascending-command
    "execute_all"
-   (concat "--filename \"" (jupyter-ascending--get-filename) "\"")))
+   "--filename" (buffer-file-name)))
 
 ;;;###autoload
 (defun jupyter-ascending-start-notebook ()
   "Start a Jupyter notebook for the current file.
-Assumes the
-notebook has the same name as the current file but with .ipynb extension."
+Assumes the notebook has the same name as the current file but
+with .ipynb extension."
   (interactive)
-  (let* ((current-file (jupyter-ascending--get-filename))
+  (let* ((current-file (buffer-file-name))
          (notebook-file (concat (file-name-sans-extension current-file) ".ipynb"))
          (default-directory (file-name-directory (expand-file-name current-file))))
 
@@ -173,9 +173,9 @@ notebook has the same name as the current file but with .ipynb extension."
       (error "Notebook file %s does not exist.  Run jupyter-ascending-init-file first" notebook-file))
 
     (async-shell-command
-     (format "%s -m jupyter notebook \"%s\""
+     (format "%s -m jupyter notebook %s"
              jupyter-ascending-python-command
-             (file-name-nondirectory notebook-file))
+             (shell-quote-argument (file-name-nondirectory notebook-file)))
      "*jupyter-notebook*")))
 
 (defun jupyter-ascending-restart-notebook ()
@@ -184,7 +184,7 @@ notebook has the same name as the current file but with .ipynb extension."
   (save-buffer)
   (jupyter-ascending--run-jupyter-ascending-command
    "restart"
-   (concat "--filename \"" (jupyter-ascending--get-filename) "\"")))
+   "--filename" (buffer-file-name)))
 
 (defvar jupyter-ascending-mode nil
   "Silences warning about reference to free variable.
@@ -588,38 +588,16 @@ Renames both files with .sync infix."
       (setq cell-content (substring cell-content 0 -1)))
     cell-content))
 
-(defun jupyter-ascending--get-current-line-number ()
-  "Get the current line number."
-  (line-number-at-pos))
-
-(defun jupyter-ascending--get-filename ()
-  "Get the current buffer's filename."
-  (buffer-file-name))
-
 (defun jupyter-ascending--run-jupyter-ascending-command (command &rest args)
   "Run a jupyter_ascending COMMAND with ARGS asynchronously."
   (let* ((proc-name "jupyter-ascending")
          (module-path (concat "jupyter_ascending.requests." command))
-         ;; Convert args from a list of strings with quoted parameters to a proper argument list
-         (processed-args (mapcar (lambda (arg)
-                                  (if (string-match-p "--\\([a-z]+\\)\\s-+\"\\(.+\\)\"" arg)
-                                      (let ((parts (split-string arg "\"" t)))
-                                        (list (car parts) (nth 1 parts)))
-                                    arg))
-                                args))
-         ;; Flatten the list of arguments
-         (flat-args (apply #'append (list "-m" module-path)
-                           (mapcar (lambda (arg)
-                                    (if (listp arg)
-                                        (list (string-trim (car arg)) (cadr arg))
-                                      (list arg)))
-                                  processed-args))))
-    (message "Running: %s %s" jupyter-ascending-python-command (mapconcat #'identity flat-args " "))
+    (message "Running: %s %s" jupyter-ascending-python-command (mapconcat #'identity args " "))
     (let ((proc (apply #'start-process
                        proc-name
                        "*jupyter-ascending*"  ; buffer to help with debugging
                        jupyter-ascending-python-command
-                       flat-args)))
+                       args)))
       (set-process-sentinel
        proc
        (lambda (_process event)
