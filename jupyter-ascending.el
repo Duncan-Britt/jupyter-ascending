@@ -603,7 +603,7 @@ Renames both files with .sync infix."
        (lambda (_process event)
          (if (string-match "finished" event)
              (message "Jupyter ascending `%s' completed successfully" command)
-           (message "Jupyter command event: %s" event)))))))
+           (message "Jupyter command event: %s" event))))))))
 
 (defun jupyter-ascending--in-markdown-cell-p ()
   "Return non-nil if point is within a markdown cell.
