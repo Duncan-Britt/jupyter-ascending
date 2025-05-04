@@ -103,15 +103,15 @@ Within your Python file, a line starting with ~# %%~ deliminates a new cell.
 When you edit and save the Python source file, you should see the Jupyter notebook running in your browser update straight away.
 
 I recommend you create keybindings for all the following commands:
-To *execute the cell at your cursor in the Jupyter notebook*, use the command ~jupyter-ascending-execute-line~.
+| Command                              | Description                            |
+|--------------------------------------+----------------------------------------|
+| =jupyter-ascending-execute-line=       | Execute cell at cursor                 |
+| =jupyter-ascending-execute-all=        | Execute all cells                      |
+| =jupyter-ascending-next-cell=          | Move to next cell or create new cell   |
+| =jupyter-ascending-previous-cell=      | Move to previous cell                  |
+| =jupyter-ascending-edit-markdown-cell= | Edit Markdown cell in dedicated buffer |
+| =jupyter-ascending-cycle-cell-type=    | Toggle between Markdown and code cells |
 
-To *execute all cells*, use ~jupyter-ascending-execute-all~.
-
-~jupyter-ascending-next-cell~ and ~jupyter-ascending-previous-cell~ can be used to *move the cursor between cells* or *create a new cell*, in the case of the former command.
-
-With the cursor in a Markdown cell, ~jupyter-ascending-edit-markdown-cell~ can be used to edit the content of that cell in a dedicated Markdown buffer.
-
-~jupyter-ascending-cycle-cell-type~ can be used to toggle between Markdown and code cells.
 * Limitations
 This package only works with Python notebooks because the [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tool only supports Python notebooks.  See here: https://github.com/imbue-ai/jupyter_ascending/issues/25
 * Related Packages
