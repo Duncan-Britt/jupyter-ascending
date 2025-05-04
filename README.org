@@ -71,7 +71,6 @@ Here's a sample installation which
                 ("C-c '" . jupyter-ascending-edit-markdown-cell)))
 #+end_src
 * Usage
-#+begin_verse
 *Create a notebook pair* with
     ~M-x jupyter-ascending-create-notebook-pair RET example RET~
 Or, equivalently
@@ -89,9 +88,30 @@ With ~example.sync.py~ open,
     ~M-x jupyter-ascending-start-notebook~
 Or, equivalently,
     ~python3 -m jupyter notebook example.sync.ipynb~    
-#+end_verse
 
+Within your Python file, a line starting with ~# %%~ deliminates a new cell.
+#+begin_src python
+  # %% [markdown]
+  # This is a markdown cell.
+  # Below is a code cell.
 
+  # %%
+  def g(x):
+    return 3*x
+#+end_src
+
+When you edit and save the Python source file, you should see the Jupyter notebook running in your browser update straight away.
+
+I recommend you create keybindings for all the following commands:
+To *execute the cell at your cursor in the Jupyter notebook*, use the command ~jupyter-ascending-execute-line~.
+
+To *execute all cells*, use ~jupyter-ascending-execute-all~.
+
+~jupyter-ascending-next-cell~ and ~jupyter-ascending-previous-cell~ can be used to *move the cursor between cells* or *create a new cell*, in the case of the former command.
+
+With the cursor in a Markdown cell, ~jupyter-ascending-edit-markdown-cell~ can be used to edit the content of that cell in a dedicated Markdown buffer.
+
+~jupyter-ascending-cycle-cell-type~ can be used to toggle between Markdown and code cells.
 * Limitations
 This package only works with Python notebooks because the [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tool only supports Python notebooks.  See here: https://github.com/imbue-ai/jupyter_ascending/issues/25
 * Related Packages
