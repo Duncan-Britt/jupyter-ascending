@@ -32,6 +32,7 @@ Starting up a session
   - Automatic comment insertion when pressing return in markdown cells
 - Setup utilities: Commands for starting Jupyter notebooks and creating synchronized file pairs
 * Installation
+Jupyter Ascending is available on [[https://melpa.org/#/jupyter-ascending][MELPA]].
 ** Prerequisites
 The following dependencies must be installed first.
 
@@ -50,11 +51,13 @@ Then install the [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascend
 
 Installing [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] (the command line tool) should install [[https://jupytext.readthedocs.io/en/latest/][jupytext]], but if not, run ~pip install jupytext~.
 
-** ~use-package~
-Installing with Elpaca:
+** Configuration
+Here's a sample installation which
+- provides keybindings for common commands in ~jupyter-ascending-mode~ and
+- uses the minor mode when opening python files with the =.sync= suffix just before the file extension.
 #+begin_src emacs-lisp
   (use-package jupyter-ascending
-    :ensure (:host github :repo "Duncan-Britt/jupyter-ascending")
+    :ensure t
     :hook (python-mode . (lambda ()
                            (when (and buffer-file-name
                                       (string-match-p "\\.sync\\.py\\'" buffer-file-name))
@@ -67,6 +70,48 @@ Installing with Elpaca:
                 ("C-c t" . jupyter-ascending-cycle-cell-type)
                 ("C-c '" . jupyter-ascending-edit-markdown-cell)))
 #+end_src
+* Usage
+*Create a notebook pair* with
+    ~M-x jupyter-ascending-create-notebook-pair RET example RET~
+Or, equivalently
+    ~python3 -m jupyter_ascending.scripts.make_pair --base example~
+This creates synced files: ~example.sync.py~ and ~example.sync.ipynb~
+
+*If you have an existing Jupyter notebook, create a python file from it:*
+    ~M-x jupyter-ascending-convert-notebook RET example.ipynb RET~
+Or, equivalently,
+    ~jupytext --to py:percent <file_name>~
+and then add the ~.sync~ suffix to both files
+
+*Start Jupyter and open the notebook:*
+With ~example.sync.py~ open,
+    ~M-x jupyter-ascending-start-notebook~
+Or, equivalently,
+    ~python3 -m jupyter notebook example.sync.ipynb~    
+
+Within your Python file, a line starting with ~# %%~ deliminates a new cell.
+#+begin_src python
+  # %% [markdown]
+  # This is a markdown cell.
+  # Below is a code cell.
+
+  # %%
+  def g(x):
+    return 3*x
+#+end_src
+
+When you edit and save the Python source file, you should see the Jupyter notebook running in your browser update straight away.
+
+I recommend you create keybindings for all the following commands:
+| Command                              | Description                            |
+|--------------------------------------+----------------------------------------|
+| =jupyter-ascending-execute-line=       | Execute cell at cursor                 |
+| =jupyter-ascending-execute-all=        | Execute all cells                      |
+| =jupyter-ascending-next-cell=          | Move to next cell or create new cell   |
+| =jupyter-ascending-previous-cell=      | Move to previous cell                  |
+| =jupyter-ascending-edit-markdown-cell= | Edit Markdown cell in dedicated buffer |
+| =jupyter-ascending-cycle-cell-type=    | Toggle between Markdown and code cells |
+
 * Limitations
 This package only works with Python notebooks because the [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tool only supports Python notebooks.  See here: https://github.com/imbue-ai/jupyter_ascending/issues/25
 * Related Packages
