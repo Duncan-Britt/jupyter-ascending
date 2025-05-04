@@ -12,15 +12,15 @@ This allows users to work with Jupyter Python notebooks in the comfort of Emacs 
 * Demo
 Python usage
 #+attr_org: :width 600
-[[./demo/jup-basic.gif]]
+[[https://github.com/Duncan-Britt/jupyter-ascending/blob/demo/demo/jup-basic.gif]]
 
 Markdown usage
 #+attr_org: :width 600
-[[./demo/jup-markdown.gif]]
+[[https://github.com/Duncan-Britt/jupyter-ascending/blob/demo/demo/jup-markdown.gif]]
 
 Starting up a session
 #+attr_org: :width 600
-[[./demo/jup-setup.gif]]
+[[https://github.com/Duncan-Britt/jupyter-ascending/blob/demo/demo/jup-setup.gif]]
 
 * Features
 - Synchronization: Editing and saving the Python buffer automatically updates the Jupyter notebook
