@@ -9,11 +9,12 @@ The Jupyter Ascending package facilitates editing and executing code in a Jupyte
 - executing code in the Jupyter notebook.
 This allows users to work with Jupyter Python notebooks in the comfort of Emacs and make use of all the features they would normally have when editing Python code, such as code completion, linting, etc, as well as running the code with their systems Python interpreter.
 
-* Demo
+* [[https://github.com/Duncan-Britt/jupyter-ascending/tree/demo?tab=readme-ov-file#demo][See the Demo (on the demo branch)]]
 Python usage
 #+attr_org: :width 600
-[[./demo/jup-basic.gif]]
+[[https://github.com/Duncan-Britt/jupyter-ascending/blob/demo/demo/ja-basic.gif]]
 
+# [[./demo/jup-basic.gif]]
 Markdown usage
 #+attr_org: :width 600
 [[./demo/jup-markdown.gif]]
