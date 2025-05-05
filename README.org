@@ -3,6 +3,8 @@
 #+date: <2025-04-18>
 #+options: toc:nil
 
+[[https://melpa.org/#/jupyter-ascending][https://melpa.org/packages/jupyter-ascending-badge.svg]]
+
 The Jupyter Ascending package facilitates editing and executing code in a Jupyter Python notebook from an ordinary Python buffer in Emacs. It does this by providing Emacs commands which utilize the [[https://jupytext.readthedocs.io/en/latest/][Jupytext]] and [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tools for
 - rendering .ipynb notebooks as standard Python source files,
 - synchronizing the state of the 2 files, and
@@ -31,6 +33,7 @@ Starting up a session
   - Edit markdown cells in dedicated markdown buffers (similar to Org mode's special edit mode)
   - Automatic comment insertion when pressing return in markdown cells
 - Setup utilities: Commands for starting Jupyter notebooks and creating synchronized file pairs
+
 * Installation
 Jupyter Ascending is available on [[https://melpa.org/#/jupyter-ascending][MELPA]].
 ** Prerequisites
@@ -42,7 +45,7 @@ If you haven't already installed [[https://jupyter.org/install][Jupyter]]:
 #+end_src
 
 Then install the [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tool.
-#+begin_src sh  
+#+begin_src sh
   pip install jupyter_ascending &&
   python3 -m jupyter nbextension    install jupyter_ascending --sys-prefix --py && \
   python3 -m jupyter nbextension     enable jupyter_ascending --sys-prefix --py && \
@@ -87,7 +90,7 @@ and then add the ~.sync~ suffix to both files
 With ~example.sync.py~ open,
     ~M-x jupyter-ascending-start-notebook~
 Or, equivalently,
-    ~python3 -m jupyter notebook example.sync.ipynb~    
+    ~python3 -m jupyter notebook example.sync.ipynb~
 
 Within your Python file, a line starting with ~# %%~ deliminates a new cell.
 #+begin_src python
