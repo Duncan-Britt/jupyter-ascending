@@ -3,7 +3,7 @@
 #+date: <2025-04-18>
 #+options: toc:nil
 
-[[https://melpa.org/packages/jupyter-ascending-badge.svg][https://melpa.org/#/jupyter-ascending]
+[[https://melpa.org/packages/jupyter-ascending-badge.svg][https://melpa.org/#/jupyter-ascending]]
 
 The Jupyter Ascending package facilitates editing and executing code in a Jupyter Python notebook from an ordinary Python buffer in Emacs. It does this by providing Emacs commands which utilize the [[https://jupytext.readthedocs.io/en/latest/][Jupytext]] and [[https://github.com/imbue-ai/jupyter_ascending][Jupyter Ascending]] command line tools for
 - rendering .ipynb notebooks as standard Python source files,
