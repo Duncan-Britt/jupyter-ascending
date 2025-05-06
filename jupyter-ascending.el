@@ -127,6 +127,7 @@
   :type 'string
   :group 'jupyter-ascending)
 
+;;;###autoload
 (defcustom jupyter-ascending-find-file-dwim? nil
   "Make `find-file' performs alternate actions for .ipynb files.
 When non-NIL,
