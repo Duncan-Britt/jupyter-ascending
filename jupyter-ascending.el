@@ -127,6 +127,60 @@
   :type 'string
   :group 'jupyter-ascending)
 
+(defcustom jupyter-ascending-find-file-dwim? nil
+  "Make `find-file' performs alternate actions for .ipynb files.
+When non-NIL,
+  if the selected file name is of the form base_name.ipynb,
+    1. convert to base_name.sync.ipynb and base_name.sync.py.
+    2. Open base_name.sync.py
+    3. Start the notebook.
+  if the selected file name is of the form base_name.sync.ipynb
+    Search for base_name.sync.py in the same directory.
+    If found,
+      1. Open it.
+      2. Start the notebook.
+    Otherwise,
+      1. create base_name.sync.py
+      2. Open it.
+      3. Start the notebook.
+
+NOTE: From lisp, use
+(customize-set-variable jupyter-ascending-find-file-dwim? t).
+This ensures that the :set function runs properly."
+  :type 'boolean
+  :group 'jupyter-ascending
+  :set (lambda (sym val)
+         (set-default sym val)
+         (if val
+             (advice-add 'find-file :around #'jupyter-ascending-find-file-advice)
+           (advice-remove 'find-file :around #'jupyter-ascending-find-file-advice))))
+
+(defun jupyter-ascending-find-file-advice (orig-fun &rest args)
+  "Advice around `find-file' to facilitate DWIM actions.
+Only alters behavior when `jupyter-ascending-find-file-dwim?' is
+non-NIL."
+  (if jupyter-ascending-find-file-dwim?
+      (let ((filename (expand-file-name (car args))))
+        (cond ((string-match-p "\\.sync\\.ipynb$" filename)
+               (let* ((ipynb-dir (file-name-directory filename))
+                      (base-name (file-name-sans-extension (file-name-nondirectory filename)))
+                      (sync-py-file-name (expand-file-name (concat base-name ".py") ipynb-dir)))
+                 (switch-to-buffer (find-file-noselect sync-py-file-name))
+                 (call-interactively 'jupyter-ascending-start-notebook)))
+              ((string-match-p "\\.ipynb$" filename)
+               (jupyter-ascending-convert-notebook
+                filename
+                (lambda (sync-py-fname)
+                  (message "sync-py-fname: %s" sync-py-fname)
+                  (switch-to-buffer (find-file-noselect sync-py-fname))
+                  (call-interactively 'jupyter-ascending-start-notebook))
+                (lambda (_sync-py-file)
+                  (apply orig-fun args))))
+              (t
+               (apply orig-fun args))))
+    (apply orig-fun args)))
+
+
 (defvar jupyter-ascending-mode-map (make-sparse-keymap)
   "Keymap for `jupyter-ascending-mode'.")
 
@@ -170,7 +224,7 @@ with .ipynb extension."
          (default-directory (file-name-directory (expand-file-name current-file))))
 
     (unless (file-exists-p notebook-file)
-      (error "Notebook file %s does not exist.  Run jupyter-ascending-init-file first" notebook-file))
+      (error "Notebook file %s does not exist." notebook-file))
 
     (async-shell-command
      (format "%s -m jupyter notebook %s"
@@ -289,11 +343,14 @@ extension), creates .sync.py and .sync.ipynb files."
                (jupyter-ascending-mode 1)))))))))
 
 ;;;###autoload
-(defun jupyter-ascending-convert-notebook ()
+(defun jupyter-ascending-convert-notebook (&optional ipynb-file on-success on-failure)
   "Convert an existing Jupyter notebook to a synced pair with jupytext.
-Renames both files with .sync infix."
-  (interactive)
-  (let* ((ipynb-file (cond
+Renames both files with .sync infix.
+
+Can be called from lisp, in which case ON-SUCCESS can be used to
+define a sequence of actions to take place when the notebook
+conversion is done."
+  (interactive (list (cond
                       ;; If in dired and at an ipynb file
                       ((and (derived-mode-p 'dired-mode)
                             (dired-get-filename nil t)
@@ -306,8 +363,8 @@ Renames both files with .sync infix."
                       ;; Otherwise prompt with a file selector
                       (t (read-file-name "Select Jupyter notebook (.ipynb): " nil nil t nil
                                          (lambda (filename)
-                                           (string-match "\\.ipynb$" filename))))))
-         (ipynb-file (expand-file-name ipynb-file))
+                                           (string-match "\\.ipynb$" filename)))))))
+  (let* ((ipynb-file (expand-file-name ipynb-file))
          (ipynb-dir (file-name-directory ipynb-file))
          (ipynb-base (file-name-sans-extension (file-name-nondirectory ipynb-file)))
          (py-file (expand-file-name (concat ipynb-base ".py") ipynb-dir))
@@ -332,13 +389,16 @@ Renames both files with .sync infix."
                  (rename-file py-file sync-py-file t)
                  (message "Created synced pair: %s and %s"
                           sync-ipynb-file sync-py-file)
-
-                 ;; Optionally open the Python file
-                 (when (y-or-n-p "Open the Python file? ")
-                   (find-file sync-py-file)
-                   (jupyter-ascending-mode 1)))
+                 (if (called-interactively-p 'interactive)
+                     (when (y-or-n-p "Open the Python file? ")
+                       (find-file sync-py-file)
+                       (jupyter-ascending-mode 1))
+                   (when on-success
+                     (funcall on-success sync-py-file))))
              (message "Error converting notebook: %s"
-                      (with-current-buffer buffer-name (buffer-string))))))))))
+                      (with-current-buffer buffer-name (buffer-string)))
+             (when on-failure
+               (funcall on-failure sync-py-file)))))))))
 
 ;; ┌──────────────────┐
 ;; │ Markdown editing │
@@ -546,6 +606,8 @@ Renames both files with .sync infix."
   :lighter " JA"
   :keymap jupyter-ascending-mode-map
   :group 'jupyter-ascending
+
+  ;; (advice-add 'find-file :around #'jupyter-ascending-find-file-advice) TODO this could be enabled with a global minor mode that can be toggled on and off.
   (if jupyter-ascending-mode
       (progn
         (add-hook 'after-save-hook #'jupyter-ascending-after-save-hook nil t)
