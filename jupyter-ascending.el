@@ -371,7 +371,8 @@ conversion is done."
          (py-file (expand-file-name (concat ipynb-base ".py") ipynb-dir))
          (sync-ipynb-file (expand-file-name (concat ipynb-base ".sync.ipynb") ipynb-dir))
          (sync-py-file (expand-file-name (concat ipynb-base ".sync.py") ipynb-dir))
-         (buffer-name "*jupytext-convert*"))
+         (buffer-name "*jupytext-convert*")
+         (outer-interactively? (interactive-p)))
 
     ;; Run jupytext to convert ipynb to py
     (message "Converting %s to Python..." ipynb-file)
@@ -390,7 +391,7 @@ conversion is done."
                  (rename-file py-file sync-py-file t)
                  (message "Created synced pair: %s and %s"
                           sync-ipynb-file sync-py-file)
-                 (if (called-interactively-p 'interactive)
+                 (if outer-interactively?
                      (when (y-or-n-p "Open the Python file? ")
                        (find-file sync-py-file)
                        (jupyter-ascending-mode 1))
