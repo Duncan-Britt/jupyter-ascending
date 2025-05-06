@@ -153,7 +153,7 @@ This ensures that the :set function runs properly."
          (set-default sym val)
          (if val
              (advice-add 'find-file :around #'jupyter-ascending-find-file-advice)
-           (advice-remove 'find-file :around #'jupyter-ascending-find-file-advice))))
+           (advice-remove 'find-file #'jupyter-ascending-find-file-advice))))
 
 (defun jupyter-ascending-find-file-advice (orig-fun &rest args)
   "Advice around `find-file' to facilitate DWIM actions.
